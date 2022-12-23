@@ -13,8 +13,6 @@ const userDisplayer = (file, user ) => {
 }
 
 const server = http.createServer((req, res) => {
-    // server code will go here
-
     // finding user id from url query... 
     const user = parseInt(url.parse(req.url, true).query.user);
  
@@ -26,13 +24,12 @@ const server = http.createServer((req, res) => {
             console.error(err);
             return
         }  
-           if(user < 10){
+        if(user < 10){
             const hostedFrom =  userDisplayer(html, users[user])
             res.end(hostedFrom);
-           }
+        }
              
-            return;
-        
+        return;
     })
 });
 

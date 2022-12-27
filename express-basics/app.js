@@ -18,17 +18,32 @@ app.get('/api/v1/tours', (req, res) => {
 });
 
 app.post('/api/v1/tours', (req, res) => {
-    const data = JSON.stringify(req.body);
-    fs.writeFileSync(`${__dirname}/friends.json`, data);
-    res.status(200).json({
-        status: "success", 
-        data: {
-            text: "the POST method is working. "
+    const newTour = req.body;
+    tours.push({
+        id: tours.length, 
+        ...newTour
+    });
+    const finalNewTour = JSON.stringify(tours);
+    fs.writeFile(`${__dirname}/dev-data/data/tours.json`, finalNewTour, (error , result) => {
+        if(error) {
+            res.status(503).json({
+                status:"failed", 
+                data: {
+                    message: "internal server error (while writing on the file)"
+                }
+            })
         }
+        res.status(200).json({
+            status: "success", 
+            data : {
+               message: "the requested tour has been added into the database"
+            }
+        })
     })
-});
+})
 
 const port = 3000;
 app.listen(port, () => {
     console.log('the server is running on the port:', port);
 });
+

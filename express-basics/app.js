@@ -2,13 +2,8 @@ const express = require('express');
 const fs = require('fs');
 const app = express();
 
-// app.get('/', (req, res) => {
-//     const response = {
-//         name: 'Najmul Huda Chowdhury', 
-//         department: "Management Information Systems",
-//     }
-//     res.status(404).json(response)
-// })
+// a function that can modify the incoming the request data 
+app.use(express.json());
 
 const tours = JSON.parse(fs.readFileSync(`${__dirname}/dev-data/data/tours.json`));
 
@@ -19,8 +14,19 @@ app.get('/api/v1/tours', (req, res) => {
         data: {
             tours: tours,
         }
+    });
+});
+
+app.post('/api/v1/tours', (req, res) => {
+    const data = JSON.stringify(req.body);
+    fs.writeFileSync(`${__dirname}/friends.json`, data);
+    res.status(200).json({
+        status: "success", 
+        data: {
+            text: "the POST method is working. "
+        }
     })
-})
+});
 
 const port = 3000;
 app.listen(port, () => {

@@ -2,14 +2,13 @@ const express = require('express');
 const fs = require('fs');
 const app = express();
 
-// a function that can modify the incoming the request data
 app.use(express.json());
 
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours.json`)
 );
 
-app.get('/api/v1/tours', (req, res) => {
+const getAllTours = (req, res) => {
   res.status(200).json({
     status: 'success',
     results: tours.length,
@@ -17,17 +16,16 @@ app.get('/api/v1/tours', (req, res) => {
       tours: tours,
     },
   });
-});
+};
 
-app.get('/api/v1/tours/:id', (req, res) => {
-
+const getSingleTour = (req, res) => {
   const tour = tours.find((element) => element.id === req.params.id * 1);
-  if(!tour){
+  if (!tour) {
     return res.status(404).json({
-        status: "failed", 
-        message: "could not found the desired tour!"
-    })
- }
+      status: 'failed',
+      message: 'could not found the desired tour!',
+    });
+  }
   res.status(200).json({
     status: 'success',
     results: 1,
@@ -35,9 +33,9 @@ app.get('/api/v1/tours/:id', (req, res) => {
       tour: tour,
     },
   });
-});
+};
 
-app.post('/api/v1/tours', (req, res) => {
+const postSingleTour = (req, res) => {
   const newTour = req.body;
   tours.push({
     id: tours.length,
@@ -64,10 +62,48 @@ app.post('/api/v1/tours', (req, res) => {
       });
     }
   );
-});
+};
 
-// handling parameters of HTTP request
+const editTour = (req, res) => {
+  const tour = tours.find((element) => element.id === req.params.id * 1);
+  if (!tour) {
+    return res.status(404).json({
+      status: 'failed',
+      message: 'could not found the desired tour!',
+    });
+  }
+  res.status(200).json({
+    status: 'success',
+    message: 'data is changed',
+    data: {
+      ...req.body,
+    },
+  });
+};
 
+const deleteTour = (req, res) => {
+  const tour = tours.find((element) => element.id === req.params.id * 1);
+  if (!tour) {
+    return res.status(404).json({
+      status: 'failed',
+      message: 'could not found the desired tour!',
+    });
+  }
+  tours.splice(req.params.id * 1, 1);
+  res.status(200).json({
+    status: 'success!',
+    deletedTour: {
+      ...tour,
+    },
+  });
+};
+
+app.route('/api/v1/tours').get(getAllTours).post(postSingleTour);
+app
+  .route('/api/v1/tours/:id')
+  .get(getSingleTour)
+  .patch(editTour)
+  .delete(deleteTour);
 const port = 3000;
 app.listen(port, () => {
   console.log('the server is running on the port:', port);

@@ -7,12 +7,13 @@ const {
   postSingleTour,
   editTour,
   deleteTour,
-  tourValidator, checkBody
+  tourValidator,
+  checkBody,
 } = require('../controllers/tour-controllers');
 
-tourRouter.param("id", tourValidator);
+tourRouter.param('id', tourValidator);
 
-tourRouter.route('/').get(getAllTours).post(checkBody,  postSingleTour);
+tourRouter.route('/').get(getAllTours).post(checkBody, postSingleTour);
 tourRouter.route('/:id').get(getSingleTour).patch(editTour).delete(deleteTour);
 
 module.exports = tourRouter;

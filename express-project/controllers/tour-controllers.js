@@ -1,4 +1,5 @@
 const fs = require('fs');
+
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/../dev-data/data/tours.json`)
 );
@@ -16,18 +17,18 @@ exports.tourValidator = (req, res, next, val) => {
   next();
 };
 
-exports.checkBody = (req, res , next  ) => {
-    if(req.body.name && req.body.price) {
-        next();
-    } else {
-        return res.status(400).json({
-            status: "failed", 
-            message: "tour name or price is missing"
-        })
-    }
-}
+exports.checkBody = (req, res, next) => {
+  if (req.body.name && req.body.price) {
+    next();
+  } else {
+    return res.status(400).json({
+      status: 'failed',
+      message: 'tour name or price is missing',
+    });
+  }
+};
 
-// route handlers 
+// route handlers
 exports.getAllTours = (req, res) => {
   res.status(200).json({
     status: 'success',
@@ -44,7 +45,7 @@ exports.getSingleTour = (req, res) => {
     status: 'success',
     results: 1,
     data: {
-      tour: tours[ req.params.id * 1],
+      tour: tours[req.params.id * 1],
     },
   });
 };
@@ -89,7 +90,7 @@ exports.editTour = (req, res) => {
 };
 
 exports.deleteTour = (req, res) => {
-  const tour = tours[req.params.id]
+  const tour = tours[req.params.id];
   tours.splice(req.params.id * 1, 1);
   res.status(200).json({
     status: 'success!',

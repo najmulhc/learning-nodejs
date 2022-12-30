@@ -3,7 +3,31 @@ const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/../dev-data/data/tours.json`)
 );
 
-// route handlers
+// middlewares
+exports.tourValidator = (req, res, next, val) => {
+  const tour = tours.find((element) => element.id === val * 1);
+  if (!tour) {
+    return res.status(404).json({
+      status: 'failed',
+      message: 'could not found the desired tour!',
+    });
+  }
+
+  next();
+};
+
+exports.checkBody = (req, res , next  ) => {
+    if(req.body.name && req.body.price) {
+        next();
+    } else {
+        return res.status(400).json({
+            status: "failed", 
+            message: "tour name or price is missing"
+        })
+    }
+}
+
+// route handlers 
 exports.getAllTours = (req, res) => {
   res.status(200).json({
     status: 'success',
@@ -16,18 +40,11 @@ exports.getAllTours = (req, res) => {
 };
 
 exports.getSingleTour = (req, res) => {
-  const tour = tours.find((element) => element.id === req.params.id * 1);
-  if (!tour) {
-    return res.status(404).json({
-      status: 'failed',
-      message: 'could not found the desired tour!',
-    });
-  }
   res.status(200).json({
     status: 'success',
     results: 1,
     data: {
-      tour: tour,
+      tour: tours[ req.params.id * 1],
     },
   });
 };
@@ -40,7 +57,7 @@ exports.postSingleTour = (req, res) => {
   });
   const finalNewTour = JSON.stringify(tours);
   fs.writeFile(
-    `${__dirname}/dev-data/data/tours.json`,
+    `${__dirname}/../dev-data/data/tours.json`,
     finalNewTour,
     (error, result) => {
       if (error) {
@@ -62,13 +79,6 @@ exports.postSingleTour = (req, res) => {
 };
 
 exports.editTour = (req, res) => {
-  const tour = tours.find((element) => element.id === req.params.id * 1);
-  if (!tour) {
-    return res.status(404).json({
-      status: 'failed',
-      message: 'could not found the desired tour!',
-    });
-  }
   res.status(200).json({
     status: 'success',
     message: 'data is changed',
@@ -79,13 +89,7 @@ exports.editTour = (req, res) => {
 };
 
 exports.deleteTour = (req, res) => {
-  const tour = tours.find((element) => element.id === req.params.id * 1);
-  if (!tour) {
-    return res.status(404).json({
-      status: 'failed',
-      message: 'could not found the desired tour!',
-    });
-  }
+  const tour = tours[req.params.id]
   tours.splice(req.params.id * 1, 1);
   res.status(200).json({
     status: 'success!',
